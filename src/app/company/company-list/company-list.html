@@ -1,0 +1,15 @@
+<h1>Companies</h1>
+<div class="company-list-container">
+    @for (company of companies$ | async; track company.id) {
+    <mat-card class="company-card">
+        <div class="company-card-content">
+            <span class="company-name">{{ company.name }}</span>
+            <span class="spacer"></span>
+            <button mat-raised-button color="primary" [routerLink]="['/company', company.id]">Edit</button>
+        </div>
+    </mat-card>
+    }
+</div>
+<button mat-fab color="accent" [routerLink]="['/company/new']" aria-label="Add Company">
+    <mat-icon>add</mat-icon>
+</button>

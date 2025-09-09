@@ -4,6 +4,11 @@
   justify-content: center; /* Center the content horizontally */
 }
 
+/* src/app/app.component.css */
+.toolbar-spacer {
+  flex: 1 1 auto; /* This pushes everything to the right */
+}
+
 .main-content {
   width: 70%; /* 70% width for large screens */
 }

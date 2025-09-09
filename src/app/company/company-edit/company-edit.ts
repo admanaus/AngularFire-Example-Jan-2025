@@ -29,43 +29,14 @@ import { Router } from '@angular/router';
   styleUrl: './company-edit.css'
 })
 export class CompanyEdit implements OnInit {
-  company$: Observable<Company | undefined>;
+  company$: Observable<Company> | undefined;
   private _snackBar = inject(MatSnackBar);
   private router = inject(Router);
 
   constructor(private companyService: CompanyService) {
-    this.company$ = this.companyService.getCompanyObservable();
   }
 
   ngOnInit() {
   }
 
-  // Here we are also handing errors and showing a snackbar, adding a nicer experience for whoever is using our app to be notified that what they        // did was successsful
-  async saveCompany(company: Company) {
-    try {
-      await this.companyService.saveCompany(company);
-      console.log('Company saved successfully');
-      this._snackBar.open('Company saved successfully', 'Close', { duration: 3000 });
-    } catch (err) {
-      console.error('Error saving company:', err);
-      this._snackBar.open('Failed to save company', 'Close', { duration: 3000 });
-    }
-  }
-
-  async editCompany(company: any) {
-    try {
-      // This is a partial update object with only a 'phone' property.
-      await this.companyService.editCompany({ phone: '123-456-7890' });
-      this._snackBar.open('Company updated', 'Close', { duration: 3000 });
-    } catch (err) {
-      console.error('Error editing company:', err);
-      this._snackBar.open('Failed to update company', 'Close', { duration: 3000 });
-    }
-  }
-
-  async deleteCompany() {
-    await this.companyService.deleteCompany();
-    // After deletion, navigate to the main page
-    this.router.navigate(['/']);
-  }
 }

@@ -1,0 +1,35 @@
+button[mat-fab] {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+}
+
+/* src/app/company/company-list/company-list.component.css */
+.company-card {
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.company-card-content {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+}
+
+.company-name {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.company-list-container {
+  max-width: 700px;
+  margin: 32px auto 0 auto;
+  padding: 0 16px;
+}

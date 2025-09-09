@@ -1,4 +1,8 @@
-<mat-toolbar color="primary">AngularFire Example</mat-toolbar>
+<mat-toolbar color="primary">
+  <span>AngularFire Example</span>
+  <span class="toolbar-spacer"></span>
+  <button mat-button [routerLink]="['/company/all']">Companies</button>
+</mat-toolbar>
 <div class="container">
   <div class="main-content">
     <router-outlet></router-outlet>
