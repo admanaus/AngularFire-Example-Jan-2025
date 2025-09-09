@@ -31,6 +31,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class CompanyEdit implements OnInit {
   company$: Observable<Company | undefined> | undefined;
   editableCompany: Company | undefined;
+  companyId: string | null = null;
   private _snackBar = inject(MatSnackBar);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -39,8 +40,8 @@ export class CompanyEdit implements OnInit {
   ngOnInit() {
     // Get the ID from the route and fetch the corresponding company as an Observable
     this.route.paramMap.subscribe(params => {
-      const companyId = params.get('id');
-      if (!companyId || companyId === 'new') {
+      this.companyId = params.get('id');
+      if (!this.companyId || this.companyId === 'new') {
         // Creation flow: provide a default company object (no id) so the form renders
         const defaultCompany: Company = { name: '' } as Company;
         this.company$ = of(defaultCompany);
@@ -48,7 +49,7 @@ export class CompanyEdit implements OnInit {
         return;
       }
       // Editing existing doc
-      this.company$ = this.companyService.getCompanyObservable(companyId);
+      this.company$ = this.companyService.getCompanyObservable(this.companyId);
       // Keep an editable copy for ngModel two-way binding
       this.company$.subscribe((company) => {
         // ensure id is preserved in the editable copy for saving
@@ -63,10 +64,16 @@ export class CompanyEdit implements OnInit {
     try {
       await this.companyService.saveCompany(company);
       this._snackBar.open('Company saved successfully', 'Close', { duration: 3000 });
+      await this.router.navigate(['/company/all']);
     } catch (e) {
       console.error('Save failed', e);
       this._snackBar.open('Failed to save company', 'Close', { duration: 3000 });
     }
+  }
+
+    async deleteCompany() {
+    await this.companyService.deleteCompany(this.companyId as string);
+    await this.router.navigate(['/company/all']);
   }
 
 }

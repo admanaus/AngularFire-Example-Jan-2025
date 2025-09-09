@@ -14,6 +14,9 @@
         </mat-card-content>
         <mat-card-actions MatCardActions.align="start">
             <button mat-raised-button color="primary" (click)="saveCompany(editableCompany!)">Save</button>
+            @if (companyId != 'new') {
+            <button mat-button color="warn" (click)="deleteCompany()">Delete</button>
+            }
         </mat-card-actions>
     </mat-card>
     } @else {
