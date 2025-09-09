@@ -1,18 +1,19 @@
 // src/app/company/company.service.ts
-import { Injectable } from '@angular/core';
-import { Company } from '../models/company';
+import {Injectable} from '@angular/core';
+import {Company} from '../models/company';
 import {
+  addDoc,
   collection,
   collectionData,
   deleteDoc,
   doc,
   docData,
   Firestore,
-  setDoc,
   updateDoc
 } from '@angular/fire/firestore';
 import { from, Observable, of } from 'rxjs';
 import { catchError } from 'rxjs';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -29,39 +30,43 @@ export class CompanyService {
   private getCompaniesColRef() {
     return collection(this.db, 'companies');
   }
-  // A method to retrieve the document as an Observable
+
   getCompanyObservable(id: string): Observable<Company | undefined> {
-    return docData(this.getCompanyDocRef(id)) as Observable<Company>;
+    // include the Firestore doc id as `id` so editors can save with the correct path
+    return docData(this.getCompanyDocRef(id), { idField: 'id' }) as Observable<Company>;
   }
 
-  // A method to retrieve the collection as an Observable with IDs
   getCompaniesObservable(): Observable<Company[]> {
-    // collectionData() gets the collection data and automatically
-    // includes the ID as a property of each document object.
-    return collectionData(this.getCompaniesColRef(), { idField: 'id' }) as Observable<Company[]>;
+    return collectionData(this.getCompaniesColRef(), {idField: 'id'}) as Observable<Company[]>;
   }
-  // saveCompany returns a Promise, so we can use .then() and .catch()
-  async saveCompany(company: Company, id: string) {
-    await setDoc(this.getCompanyDocRef(id), company)
-      .then(_ => console.log('Success on set'))
-      .catch(error => console.log('set', error));
+
+  async saveCompany(company: Company) {
+    // Prepare data without the Firestore document id field
+    const { id, ...data } = company;
+    if (id) {
+      // updateDoc expects an object without the document id and with proper field paths
+      await updateDoc(this.getCompanyDocRef(id), data as Partial<Company>);
+    } else {
+      // For creation, also avoid persisting the id field
+      await addDoc(this.getCompaniesColRef(), data as Omit<Company, 'id'>);
+    }
   }
 
   // editCompany returns a Promise
-  async editCompany(company: any, id: string) {
-    await updateDoc(this.getCompanyDocRef(id), company)
+  async editCompany(company: Partial<Company>, id: string) {
+    const { id: _omit, ...data } = company as Company & { id?: string };
+    await updateDoc(this.getCompanyDocRef(id), data)
       .then(_ => console.log('Success on update'))
       .catch(error => console.log('update', error));
   }
 
   // A method to perform a partial update (non-destructive)
-  async updateCompany(company: any, id: string) {
-    await updateDoc(this.getCompanyDocRef(id), company);
+  async updateCompany(company: Partial<Company>, id: string) {
+    const { id: _omit, ...data } = company as Company & { id?: string };
+    await updateDoc(this.getCompanyDocRef(id), data);
   }
-  // deleteCompany returns a Promise
+  // deleteCompany
   async deleteCompany(id: string) {
-    await deleteDoc(this.getCompanyDocRef(id))
-      .then(_ => console.log('Success on remove'))
-      .catch(error => console.log('remove', error));
+    await deleteDoc(this.getCompanyDocRef(id));
   }
 }
