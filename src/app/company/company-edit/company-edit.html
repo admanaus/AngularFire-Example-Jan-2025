@@ -1,0 +1,18 @@
+@if (company$ | async; as company) {
+<pre
+    style="font-size: 12px; background: #fafafa; padding: 8px; border: 1px solid #eee; border-radius: 4px; margin-bottom: 12px;">
+    {{ company | json }}
+  </pre>
+<mat-card>
+    <mat-form-field appearance="fill">
+        <mat-label>Company Name</mat-label>
+        <input type="text" matInput [(ngModel)]="company.name" placeholder="Enter company name"
+            aria-label="Company name">
+    </mat-form-field>
+    <mat-card-actions align="start">
+        <button mat-raised-button color="primary" (click)="saveCompany(company)">Save</button>
+        <button mat-raised-button (click)="editCompany(company)">Edit user to have a phone</button>
+        <button mat-raised-button color="warn" (click)="deleteCompany()">Delete</button>
+    </mat-card-actions>
+</mat-card>
+}

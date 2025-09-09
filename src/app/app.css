@@ -1,0 +1,16 @@
+/* src/app/app.component.css */
+.container {
+  display: flex;
+  justify-content: center; /* Center the content horizontally */
+}
+
+.main-content {
+  width: 70%; /* 70% width for large screens */
+}
+
+/* For smaller screens, the content can take up the full width */
+@media (max-width: 960px) {
+  .main-content {
+    width: 100%;
+  }
+}
