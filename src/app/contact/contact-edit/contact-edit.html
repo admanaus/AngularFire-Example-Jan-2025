@@ -1,0 +1,29 @@
+<div class="edit-container">
+    @if (contact$ | async; as contact) {
+    <pre class="debug-output">
+      {{ contact | json }}
+    </pre>
+    <mat-card>
+        <mat-card-title>Edit Contact</mat-card-title>
+        <mat-card-content>
+            <mat-form-field>
+                <mat-label>Contact Name</mat-label>
+                <input type="text" matInput [(ngModel)]="editableContact!.name" name="contactName"
+                    placeholder="Enter contact name" aria-label="Contact name" />
+            </mat-form-field>
+        </mat-card-content>
+        <mat-card-actions MatCardActions.align="start">
+            <button mat-raised-button color="primary" (click)="saveContact(editableContact!)">Save</button>
+            @if (contactId != 'new') {
+            <button mat-button color="warn" (click)="deleteContact()">Delete</button>
+            }
+        </mat-card-actions>
+    </mat-card>
+    } @else {
+    <mat-card>
+        <mat-card-content>
+            <p>Loading contact...</p>
+        </mat-card-content>
+    </mat-card>
+    }
+</div>

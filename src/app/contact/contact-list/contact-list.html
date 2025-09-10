@@ -1,0 +1,15 @@
+<h1>Contacts</h1>
+<div class="contact-list-container">
+    @for (contact of contacts$ | async; track contact.id) {
+    <mat-card class="contact-card">
+        <div class="contact-card-content">
+            <span class="contact-name">{{ contact.name }}</span>
+            <span class="spacer"></span>
+            <button mat-raised-button color="primary" [routerLink]="['/contact', contact.id]">Edit</button>
+        </div>
+    </mat-card>
+    }
+</div>
+<button mat-fab color="accent" [routerLink]="['/contact/new']" aria-label="Add Contact">
+    <mat-icon>add</mat-icon>
+</button>
