@@ -4,6 +4,13 @@ button[mat-fab] {
   right: 25px;
 }
 
+/* contact-list.css */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 /* src/app/contact/contact-list/contact-list.component.css */
 .contact-card {
   margin-bottom: 16px;

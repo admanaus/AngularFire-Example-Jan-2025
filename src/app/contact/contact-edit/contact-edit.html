@@ -11,6 +11,14 @@
                 <input type="text" matInput [(ngModel)]="editableContact!.name" name="contactName"
                     placeholder="Enter contact name" aria-label="Contact name" />
             </mat-form-field>
+            <mat-form-field>
+                <mat-label>Company</mat-label>
+                <mat-select [(ngModel)]="editableContact!.companyId" name="companyId" placeholder="Company">
+                    @for (company of companies$ | async; track company.id) {
+                    <mat-option [value]="company.id">{{ company.name }}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
         </mat-card-content>
         <mat-card-actions MatCardActions.align="start">
             <button mat-raised-button color="primary" (click)="saveContact(editableContact!)">Save</button>
