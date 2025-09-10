@@ -40,8 +40,8 @@ export class ContactList implements OnInit {
     this.getCompanies();
   }
 
-  getContacts() {
-    this.contacts$ = this.contactService.getContactsObservable();
+  getContacts(companyId?: string) {
+    this.contacts$ = this.contactService.getContactsObservable(companyId || null);
   }
 
   getCompanies() {

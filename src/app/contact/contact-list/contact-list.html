@@ -1,7 +1,7 @@
 <div class="header">
     <h1>Contacts</h1>
     <mat-form-field>
-        <mat-select (selectionChange)="getContacts()">
+        <mat-select (selectionChange)="getContacts($event.value)">
             <mat-option [value]="undefined">All</mat-option>
             @for (company of companies$ | async; track company.id) {
             <mat-option [value]="company.id">{{company.name}}</mat-option>

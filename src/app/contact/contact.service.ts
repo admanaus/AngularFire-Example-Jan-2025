@@ -1,6 +1,6 @@
 // src/app/contact/contact.service.ts
-import {Injectable} from '@angular/core';
-import {Contact} from '../models/contact';
+import { Injectable } from '@angular/core';
+import { Contact } from '../models/contact';
 import {
   addDoc,
   collection,
@@ -9,9 +9,11 @@ import {
   doc,
   docData,
   Firestore,
-  updateDoc
+  query,
+  updateDoc,
+  where
 } from '@angular/fire/firestore';
-import { from, Observable, of } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs';
 
 @Injectable({
@@ -36,9 +38,14 @@ export class ContactService {
     return docData(this.getContactDocRef(id), { idField: 'id' }) as Observable<Contact>;
   }
 
-  getContactsObservable(): Observable<Contact[]> {
-    return collectionData(this.getContactsColRef(), {idField: 'id'}) as Observable<Contact[]>;
+  getContactsObservable(companyId: string | null = null): Observable<Contact[]> {
+    const contactsCollection = this.getContactsColRef();
+    const filtered = companyId ? query(contactsCollection, where('companyId', '==', companyId)) : contactsCollection;
+    return (collectionData(filtered, { idField: 'id' }) as Observable<Contact[]>).pipe(
+      catchError(err => this.errorHandler(err))
+    );
   }
+
 
   async saveContact(contact: Contact) {
     // Prepare data without the Firestore document id field
@@ -68,5 +75,10 @@ export class ContactService {
   // deleteContact
   async deleteContact(id: string) {
     await deleteDoc(this.getContactDocRef(id));
+  }
+
+  private errorHandler(error: any): Observable<any> {
+    console.log(error);
+    return throwError(() => error);
   }
 }
