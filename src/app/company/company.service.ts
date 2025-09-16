@@ -1,5 +1,5 @@
 // src/app/company/company.service.ts
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Company} from '../models/company';
 import {
   addDoc,
@@ -9,18 +9,23 @@ import {
   doc,
   docData,
   Firestore,
-  updateDoc
+  updateDoc,
+  query,
+  where
 } from '@angular/fire/firestore';
 import { from, Observable, of } from 'rxjs';
 import { catchError } from 'rxjs';
+import { AuthService } from '../services/auth';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CompanyService {
+  private authService = inject(AuthService);
 
   constructor(private db: Firestore) {
   }
+
   // A helper to get the document reference
   private getCompanyDocRef(id: string) {
     return doc(this.db, 'companies/' + id);
@@ -37,18 +42,39 @@ export class CompanyService {
   }
 
   getCompaniesObservable(): Observable<Company[]> {
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) {
+      return of([]);
+    }
+    
+    // Optional: Filter companies by user ID if you want user-specific data
+    // const companiesQuery = query(
+    //   this.getCompaniesColRef(),
+    //   where('userId', '==', currentUser.uid)
+    // );
+    // return collectionData(companiesQuery, {idField: 'id'}) as Observable<Company[]>;
+    
+    // For now, return all companies (no user filtering)
     return collectionData(this.getCompaniesColRef(), {idField: 'id'}) as Observable<Company[]>;
   }
 
   async saveCompany(company: Company) {
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) {
+      throw new Error('User must be authenticated to save companies');
+    }
+
     // Prepare data without the Firestore document id field
     const { id, ...data } = company;
+    
+    // Optional: Add user ID to the company data
+    // const companyData = { ...data, userId: currentUser.uid };
+    const companyData = data; // For now, don't add user filtering
+    
     if (id) {
-      // updateDoc expects an object without the document id and with proper field paths
-      await updateDoc(this.getCompanyDocRef(id), data as Partial<Company>);
+      await updateDoc(this.getCompanyDocRef(id), companyData as Partial<Company>);
     } else {
-      // For creation, also avoid persisting the id field
-      await addDoc(this.getCompaniesColRef(), data as Omit<Company, 'id'>);
+      await addDoc(this.getCompaniesColRef(), companyData as Omit<Company, 'id'>);
     }
   }
 

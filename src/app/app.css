@@ -19,3 +19,40 @@
     width: 100%;
   }
 }
+
+/* Authentication-related styles */
+.nav-buttons {
+  display: flex;
+  gap: 8px;
+  margin-right: 16px;
+}
+
+.user-menu-button {
+  margin-left: 8px;
+}
+
+.user-email {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Responsive adjustments for authentication UI */
+@media (max-width: 768px) {
+  .nav-buttons {
+    gap: 4px;
+    margin-right: 8px;
+  }
+  
+  .nav-buttons button {
+    min-width: auto;
+    padding: 0 8px;
+  }
+  
+  .user-email {
+    max-width: 150px;
+  }
+}

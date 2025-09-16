@@ -1,5 +1,5 @@
 // src/app/contact/contact.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Contact } from '../models/contact';
 import {
   addDoc,
@@ -13,16 +13,19 @@ import {
   updateDoc,
   where
 } from '@angular/fire/firestore';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import { catchError } from 'rxjs';
+import { AuthService } from '../services/auth';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ContactService {
+  private authService = inject(AuthService);
 
   constructor(private db: Firestore) {
   }
+
   // A helper to get the document reference
   private getContactDocRef(id: string) {
     return doc(this.db, 'contacts/' + id);
@@ -39,23 +42,51 @@ export class ContactService {
   }
 
   getContactsObservable(companyId: string | null = null): Observable<Contact[]> {
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) {
+      return of([]);
+    }
+
     const contactsCollection = this.getContactsColRef();
-    const filtered = companyId ? query(contactsCollection, where('companyId', '==', companyId)) : contactsCollection;
-    return (collectionData(filtered, { idField: 'id' }) as Observable<Contact[]>).pipe(
+    
+    // Build query with optional company filter
+    if (companyId) {
+      const contactsQuery = query(contactsCollection, where('companyId', '==', companyId));
+      return (collectionData(contactsQuery, { idField: 'id' }) as Observable<Contact[]>).pipe(
+        catchError(err => this.errorHandler(err))
+      );
+    }
+    
+    // Optional: Add user filtering
+    // if (currentUser) {
+    //   const contactsQuery = query(contactsCollection, where('userId', '==', currentUser.uid));
+    //   return (collectionData(contactsQuery, { idField: 'id' }) as Observable<Contact[]>).pipe(
+    //     catchError(err => this.errorHandler(err))
+    //   );
+    // }
+
+    return (collectionData(contactsCollection, { idField: 'id' }) as Observable<Contact[]>).pipe(
       catchError(err => this.errorHandler(err))
     );
   }
 
-
   async saveContact(contact: Contact) {
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) {
+      throw new Error('User must be authenticated to save contacts');
+    }
+
     // Prepare data without the Firestore document id field
     const { id, ...data } = contact;
+    
+    // Optional: Add user ID to the contact data
+    // const contactData = { ...data, userId: currentUser.uid };
+    const contactData = data; // For now, don't add user filtering
+    
     if (id) {
-      // updateDoc expects an object without the document id and with proper field paths
-      await updateDoc(this.getContactDocRef(id), data as Partial<Contact>);
+      await updateDoc(this.getContactDocRef(id), contactData as Partial<Contact>);
     } else {
-      // For creation, also avoid persisting the id field
-      await addDoc(this.getContactsColRef(), data as Omit<Contact, 'id'>);
+      await addDoc(this.getContactsColRef(), contactData as Omit<Contact, 'id'>);
     }
   }
 
